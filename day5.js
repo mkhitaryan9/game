@@ -32,7 +32,7 @@ let options = {
 let winCount = 0;
 let count = 0;
 let chosenWord = "";
-
+let visible = false;
 
 
 //Display option buttons
@@ -60,6 +60,7 @@ const blocker = () => {
     button.disabled.true;
   });
   newGameContainer.classList.remove("hide");
+  visible = false;
 };
 
 
@@ -79,6 +80,7 @@ const generateWord = (optionValue) => {
 
   //initially hide letters, clear previous word
   letterContainer.classList.remove("hide");
+  visible = true;
   userInputSection.innerText = "";
   let optionArray = options[optionValue];
   //choose random word
@@ -88,12 +90,29 @@ const generateWord = (optionValue) => {
   let displayItem = chosenWord.replace(/./g, '<span class="dashes">_</span>');
   //Display each element as span
   userInputSection.innerHTML = displayItem;
+  
+
+  if(visible) {
+    document.addEventListener("keydown", (event) => {
+      const keyPressed = event.key.toUpperCase();
+      const letterButtons = document.querySelectorAll(".letters");
+      console.log(keyPressed)
+      // Find the button with the matching text and trigger a click event
+      letterButtons.forEach((button) => {
+        if (button.innerText === keyPressed) {
+          console.log(keyPressed)
+          button.click();
+        }
+      });
+    });
+  }
 };
 
 
 
 //Initial Function (Called when page loads/user presses new game)
 const initializer = () => {
+
   winCount = 0;
   count = 0;
   //Initially erase all content and hide letteres and new game button
@@ -102,8 +121,13 @@ const initializer = () => {
   letterContainer.classList.add("hide");
   newGameContainer.classList.add("hide");
   letterContainer.innerHTML = "";
+  visible = false;
+
+
   //For creating letter buttons
   for (let i = 65; i < 91; i++) {
+
+    
     let button = document.createElement("button");
     button.classList.add("letters");
     //Number to ASCII[A-Z]
@@ -145,6 +169,7 @@ const initializer = () => {
     });
     letterContainer.append(button);
   }
+
   displayOptions();
   //Call to canvasCreator (for clearing previous canvas and creating initial canvas)
   let { initialDrawing } = canvasCreator();
@@ -228,6 +253,11 @@ const drawMan = (count) => {
       break;
   }
 };
+
+function start() {
+  visible = false;
+  initializer()
+}
 //New Game
-newGameButton.addEventListener("click", initializer);
-window.onload = initializer;
+newGameButton.addEventListener("click", start);
+window.onload = start;
