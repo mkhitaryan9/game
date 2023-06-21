@@ -8,29 +8,24 @@ const canvas = document.getElementById("canvas");
 const resultText = document.getElementById("result-text");
 
 //Options values for buttons
-let options = {
-  fruits: [
-    "Apple",
-    "Blueberry",
-    "Mandarin",
-    "Pineapple",
-    "Pomegranate",
-    "Watermelon",
-  ],
-  animals: ["Hedgehog", "Rhinoceros", "Squirrel", "Panther", "Walrus", "Zebra"],
-  countries: [
-    "India",
-    "Hungary",
-    "Kyrgyzstan",
-    "Switzerland",
-    "Zimbabwe",
-    "Dominica",
-  ],
-};
+let options = {};
+
+fetch("options.json")
+  .then((response) => response.json())
+  .then((data) => {
+    // console.log(options["fruits"]);
+    options = data;
+    console.log(data);
+  })
+  .catch((error) => {
+    console.error("Error fetching the file:", error);
+  });
+
 //count
 let winCount = 0;
 let count = 0;
 let chosenWord = "";
+let visible = false;
 
 //Display option buttons
 const displayOptions = () => {
@@ -44,6 +39,7 @@ const displayOptions = () => {
 
 //Block all the Buttons
 const blocker = () => {
+  visible = false;
   let optionsButtons = document.querySelectorAll(".options");
   let letterButtons = document.querySelectorAll(".letters");
   //disable all options
@@ -55,10 +51,12 @@ const blocker = () => {
     button.disabled = true;
   });
   newGameContainer.classList.remove("hide");
+  checker(visible);
 };
 
 //Word Generator
 const generateWord = (optionValue) => {
+  visible = true;
   let optionsButtons = document.querySelectorAll(".options");
   //If optionValur matches the button innerText then highlight the button
   optionsButtons.forEach((button) => {
@@ -79,6 +77,7 @@ const generateWord = (optionValue) => {
   let displayItem = chosenWord.replace(/./g, '<span class="dashes">_</span>');
   //Display each element as span
   userInputSection.innerHTML = displayItem;
+  checker(visible);
 };
 
 //Initial Function (Called when page loads/user presses new game)
@@ -91,6 +90,7 @@ const initializer = () => {
   letterContainer.classList.add("hide");
   newGameContainer.classList.add("hide");
   letterContainer.innerHTML = "";
+
   //For creating letter buttons
   for (let i = 65; i < 91; i++) {
     let button = document.createElement("button");
@@ -140,6 +140,7 @@ const initializer = () => {
   let { initialDrawing } = canvasCreator();
   //initialDrawing would draw the frame
   initialDrawing();
+  checker(visible);
 };
 
 //Canvas
@@ -216,6 +217,39 @@ const drawMan = (count) => {
       break;
   }
 };
+
+// Event handler for keydown event
+const eventHandler = (event) => {
+    const keyPressed = event.key.toUpperCase();
+    const letterButtons = document.querySelectorAll(".letters");
+    // Find the button with the matching text and trigger a click event
+    letterButtons.forEach((button) => {
+      if (button.innerText === keyPressed && !button.disabled) {
+        console.log(keyPressed);
+        button.click();
+      }
+    });
+  };
+  
+  // Function to add keydown event listener
+  const addKeyDownListener = () => {
+    document.addEventListener("keydown", eventHandler);
+  };
+  
+  // Function to remove keydown event listener
+  const removeKeyDownListener = () => {
+    document.removeEventListener("keydown", eventHandler);
+  };
+  
+  // Updated checker function
+  const checker = (visible) => {
+    if (visible) {
+      addKeyDownListener();
+    } else {
+      removeKeyDownListener();
+    }
+  };
+
 
 //New Game
 newGameButton.addEventListener("click", initializer);
