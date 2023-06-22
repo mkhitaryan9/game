@@ -15,7 +15,8 @@ fetch("options.json")
   .then((data) => {
     // console.log(options["fruits"]);
     options = data;
-    console.log(data);
+    console.log(options);
+    // initializer()
   })
   .catch((error) => {
     console.error("Error fetching the file:", error);
