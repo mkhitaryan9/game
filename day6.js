@@ -16,7 +16,7 @@ fetch("options.json")
     // console.log(options["fruits"]);
     options = data;
     console.log(options);
-    // initializer()
+    initializer()
   })
   .catch((error) => {
     console.error("Error fetching the file:", error);
@@ -254,4 +254,4 @@ const eventHandler = (event) => {
 
 //New Game
 newGameButton.addEventListener("click", initializer);
-window.onload = initializer;
+// window.onload = initializer;
